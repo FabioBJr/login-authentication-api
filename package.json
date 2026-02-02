@@ -1,0 +1,27 @@
+{
+    "name": "login-authentication-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "setup": "node src/setup.js",
+        "dev": "node src/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FabioBJr/login-authentication-api.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/FabioBJr/login-authentication-api/issues"
+    },
+    "homepage": "https://github.com/FabioBJr/login-authentication-api#readme",
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "pg": "^8.17.2"
+    }
+}
