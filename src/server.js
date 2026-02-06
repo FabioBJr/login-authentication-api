@@ -1,5 +1,5 @@
 import http from 'node:http';
-import authController from './controllers/authController.js';
+import authController from './app/controllers/authController.js';
 
 const port = 3000;
 
@@ -7,15 +7,15 @@ const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
 
-    if (req.url === '/users' && req.method === 'POST') {
+    if (req.url === '/auth' && req.method === 'POST') {
         return authController.criaUsuario(req, res);
     }
 
-    if (req.url === '/users/login' && req.method === 'POST') {
+    if (req.url === '/auth/login' && req.method === 'POST') {
         return authController.logaUsuario(req, res);
     }
 
-    if (req.url === '/users/forgot-password' && req.method === 'POST') {
+    if (req.url === '/auth/forgot-password' && req.method === 'POST') {
         return authController.recuperaSenha(req, res);
     }
 

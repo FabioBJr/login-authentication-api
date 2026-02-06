@@ -1,9 +1,9 @@
 import { validaEmail, validaSenha } from '../utils/validators.js';
 import { geraSenhaHash, verificaSenha } from '../utils/password.js';
 
-import User from '../models/User.js';
+import User from './models/User.js';
 
-class authController {
+class AuthController {
     async criaUsuario(req, res) {
         let body = '';
 
@@ -124,4 +124,4 @@ class authController {
     async recuperaSenha(req, res) {}
 }
 
-export default new authController();
+export default new AuthController();
