@@ -1,6 +1,6 @@
 # 💡 Authentication API
 
-Projeto simples para aprender e praticar alguns conceitos do desenvolvimento web (rotas, server, autenticação...) com Nodejs. Quis explorar os fundamentos e entender como as coisas funcionavam, então usei me limitei as ferramentas do próprio node e evitei utilizar frameworks e libs como o Express e o jsonwebtoken.
+Projeto simples para aprender e praticar alguns conceitos do desenvolvimento web (rotas, server, autenticação...) com Nodejs. Quis explorar os fundamentos e entender como as coisas funcionavam, então me limitei às ferramentas do próprio node e evitei utilizar frameworks e libs como o Express e o jsonwebtoken.
 
 ## 📌 Projeto
 
