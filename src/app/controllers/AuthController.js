@@ -1,7 +1,8 @@
 import { validaEmail, validaSenha } from '../utils/validators.js';
 import { geraSenhaHash, verificaSenha } from '../utils/password.js';
+import { geraToken } from '../utils/jwt.js';
 
-import User from './models/User.js';
+import User from '../models/User.js';
 
 class AuthController {
     async criaUsuario(req, res) {
@@ -53,8 +54,23 @@ class AuthController {
             const user = await User.create(email, hash, salt);
 
             if (user) {
-                res.writeHead(201);
-                res.end(JSON.stringify(user)); //Feature de envio de email ao cadastrar
+                const exp = 3600 * 2;
+                const expiraEm = Math.floor(Date.now() / 1000) + exp;
+
+                const token = geraToken({
+                    id: user.id,
+                    email: user.email,
+                    exp: expiraEm,
+                });
+
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                res.end(
+                    JSON.stringify({
+                        message: 'Usuário criado com sucesso!',
+                        user: { id: user.id, email: user.email },
+                        access_token: token,
+                    })
+                );
             } else {
                 res.writeHead(400);
                 res.end({ error: 'Não foi possível criar usuário.' });
@@ -98,11 +114,21 @@ class AuthController {
                 if (
                     await verificaSenha(password, user.password_hash, user.salt)
                 ) {
-                    res.writeHead(200);
-                    return res.end(
-                        console.log(
-                            `Login realizado com sucesso. Bem vindo(a) ${user.email}`
-                        )
+                    const exp = 3600 * 2;
+                    const expiraEm = Math.floor(Date.now() / 1000) + exp;
+                    const token = geraToken({
+                        id: user.id,
+                        email: user.email,
+                        exp: expiraEm,
+                    });
+
+                    res.writeHead(201, { 'Content-Type': 'application/json' });
+                    res.end(
+                        JSON.stringify({
+                            message: `Login realizado com sucesso. Bem vindo(a) ${user.email}`,
+                            user: { id: user.id, email: user.email },
+                            access_token: token,
+                        })
                     );
                 } else {
                     res.writeHead(400);
@@ -119,6 +145,11 @@ class AuthController {
                 );
             }
         });
+    }
+
+    async painelUsuario(req, res) {
+        res.writeHead(200);
+        return res.end(console.log('TELA DE PAINEL DE USUÁRIO'));
     }
 
     async recuperaSenha(req, res) {}
