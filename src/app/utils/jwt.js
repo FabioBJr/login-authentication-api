@@ -1,9 +1,8 @@
-import process from 'node:process';
-import 'dotenv/config';
+import jwtConfig from '../../config/jwt.js';
 
 import crypto from 'node:crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = jwtConfig.jwt;
 
 function base64UrlEncode(obj) {
     return Buffer.from(JSON.stringify(obj)).toString('base64url');
