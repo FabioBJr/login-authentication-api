@@ -1,4 +1,4 @@
-import pool from './config/database.js';
+import pool from './database/index.js';
 
 async function configuraBancoDados() {
     const criaTabelaUsuarios = `
@@ -11,12 +11,20 @@ async function configuraBancoDados() {
         );
     `;
 
+    const adicionaColunas = `
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS password_reset_token TEXT,
+        ADD COLUMN IF NOT EXISTS password_reset_expires TIMESTAMP;
+    `;
+
+    const queries = [criaTabelaUsuarios, adicionaColunas];
+
     try {
-        console.log('Criando tabela de usuários...');
+        for (const query of queries) {
+            await pool.query(query);
+        }
 
-        await pool.query(criaTabelaUsuarios);
-
-        console.log('Tabela "users" criada com sucesso.');
+        console.log('Banco de dados configurado com sucesso.');
     } catch (error) {
         console.error('Erro ao criar tabela de usuários:', error);
     } finally {

@@ -1,4 +1,4 @@
-import pool from '../../config/database.js';
+import pool from '../../database/index.js';
 
 class User {
     async create(email, passwordHash, salt) {
@@ -41,6 +41,40 @@ class User {
         `;
 
         const { rows } = await pool.query(query, [email]);
+
+        return rows[0];
+    }
+
+    async salvaResetToken(id, token, dataExpiracao) {
+        const query = `
+            UPDATE users
+            SET password_reset_token = $1,
+                password_reset_expires = $2
+            WHERE id = $3
+        `;
+
+        await pool.query(query, [token, dataExpiracao, id]);
+    }
+
+    async tokenExpired(token) {
+        const query = `
+            SELECT password_reset_expires FROM users WHERE TRIM(password_reset_token) = $1;
+        `;
+
+        const { rows } = await pool.query(query, [token]);
+
+        return new Date() > rows[0].password_reset_expires;
+    }
+
+    async resetPassword(token, passwordHash, salt) {
+        const query = `
+                UPDATE users SET password_reset_token = NULL, password_reset_expires = NULL, password_hash = $2, salt = $3
+                WHERE TRIM(password_reset_token) = $1
+                RETURNING id, email;
+            `;
+        const values = [token, passwordHash, salt];
+
+        const { rows } = await pool.query(query, values);
 
         return rows[0];
     }

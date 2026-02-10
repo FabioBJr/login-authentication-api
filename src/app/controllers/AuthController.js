@@ -1,6 +1,8 @@
 import { validaEmail, validaSenha } from '../utils/validators.js';
 import { geraSenhaHash, verificaSenha } from '../utils/password.js';
 import { geraToken } from '../utils/jwt.js';
+import crypto from 'node:crypto';
+import Mail from '../lib/Mail.js';
 
 import User from '../models/User.js';
 
@@ -147,12 +149,127 @@ class AuthController {
         });
     }
 
+    async recuperaSenha(req, res) {
+        let body = '';
+
+        req.on('data', (chunk) => {
+            body += chunk.toString();
+        });
+
+        req.on('end', async () => {
+            const { email } = JSON.parse(body);
+
+            const user = await User.findUser(email);
+
+            if (!user) {
+                res.writeHead(200);
+                res.end(
+                    JSON.stringify({
+                        message:
+                            'Se este e-mail estiver cadastrado, você receberá um link.',
+                    })
+                );
+            }
+
+            const token = crypto.randomBytes(16).toString('hex');
+
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+
+            try {
+                await User.salvaResetToken(user.id, token, now);
+
+                Mail.send({
+                    to: email,
+                    subject: 'Redefinição de senha',
+                    text: `
+                        Foi solicitada a redefinição de sua senha de acesso
+                        
+                        Se essa solicitação não foi feita por você, desconsidere esta mensagem pois
+                        nenhuma alteração foi feita em seus dados.
+                        
+                        Para efetivar a redefinição da sua senha, clique no link abaixo para
+                        acessar a página de cadastramento de nova senha:
+                        
+                        Link: http://localhost:3000/reset-password?token=${token}
+                        
+                        Atenção: O link acima é válido até ${now}
+                        e será invalidado se um novo e-mail de recuperação de senha for solicitado.
+                    `.replace(/^\s+/gm, ''),
+                });
+            } catch (error) {
+                res.writeHead(200);
+                res.end(
+                    JSON.stringify({
+                        error: error.message,
+                    })
+                );
+            }
+
+            res.writeHead(200);
+            res.end(
+                JSON.stringify({
+                    message:
+                        'Se este e-mail estiver cadastrado, você receberá um link.',
+                })
+            );
+        });
+    }
+
+    async redefineSenha(req, res) {
+        let body = '';
+
+        req.on('data', (chunk) => {
+            body += chunk.toString();
+        });
+
+        req.on('end', async () => {
+            const { password } = JSON.parse(body);
+            const token = req.params.token;
+
+            try {
+                if (!password || !validaSenha(password)) {
+                    res.writeHead(400);
+                    return res.end(
+                        JSON.stringify({ error: 'Informe uma senha forte' })
+                    );
+                }
+            } catch (error) {
+                res.writeHead(400);
+                return res.end(JSON.stringify({ error }));
+            }
+
+            if (await User.tokenExpired(token)) {
+                res.writeHead(400);
+                return res.end(JSON.stringify({ error: 'Token expirou' }));
+            }
+
+            const { salt, hash } = await geraSenhaHash(password);
+
+            const user = await User.resetPassword(token, salt, hash);
+
+            if (user) {
+                res.writeHead(200);
+                return res.end(
+                    JSON.stringify({
+                        message: `Senha redefinida com sucesso ${user.email}. Realize o login para acessar sua conta.`,
+                    })
+                );
+            } else {
+                res.writeHead(400);
+                return res.end(
+                    JSON.stringify({
+                        erro: `Ocorreu um erro ao redefiner sua senha. Tente novamente.`,
+                    })
+                );
+            }
+        });
+    }
+
     async painelUsuario(req, res) {
         res.writeHead(200);
         return res.end(console.log('TELA DE PAINEL DE USUÁRIO'));
     }
-
-    async recuperaSenha(req, res) {}
 }
 
 export default new AuthController();

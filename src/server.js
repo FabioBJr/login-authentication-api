@@ -20,6 +20,13 @@ const server = http.createServer((req, res) => {
         return AuthController.recuperaSenha(req, res);
     }
 
+    if (req.url.startsWith('/reset-password') && req.method === 'POST') {
+        const token = req.url.split('?token=')[1];
+
+        req.params = { token };
+        return AuthController.redefineSenha(req, res);
+    }
+
     if (req.url === '/auth/me' && req.method === 'GET') {
         return authMiddleware(AuthController.painelUsuario)(req, res);
     }
