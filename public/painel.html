@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Usuário</title>
+    <link rel="stylesheet" href="style-painel.css">
+</head>
+<body>
+    <div class="main">
+        <header class="profile-header">
+            <div class="profile-photo-container">
+                <img src="" alt="Foto de Perfil" id="photo-exibition">
+                <button class="edit-photo-btn" title="Editar Foto">📷</button>
+            </div>
+            <h2 id="nome-usuario">Carregando...</h2>
+            <p id="email-usuario">email@exemplo.com</p>
+        </header>
+
+        <fieldset class="grupo">
+            <div class="campo">
+                <label>Nome de Usuário</label>
+                <div class="input-with-button">
+                    <input type="text" id="input-nome" placeholder="Seu nome">
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Número de Acessos</label>
+                <input type="number" id="num-acessos" value="0" readonly>
+            </div>
+        </fieldset>
+
+        <div class="menu">
+            <button id="save">
+                <span id="spinner" class="spinner hidden"></span>
+                <span id="btn-text">Salvar Alterações</span>
+            </button>
+            <button id="exit">Sair</button>
+        </div>
+    </div>
+
+    <script src="painel.js"></script>
+</body>
+</html>

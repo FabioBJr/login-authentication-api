@@ -25,7 +25,9 @@ export function authMiddleware(handler) {
 
             if (!decoded) {
                 res.writeHead(401);
-                res.end();
+                res.end(
+                    JSON.stringify({ error: 'Erro ao decodificar token.' })
+                );
             }
 
             req.user = decoded;

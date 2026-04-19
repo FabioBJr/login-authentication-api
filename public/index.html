@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen">
+
+        <title>Login Authentication API</title>
+    </head>
+    <body>
+        <div class="main">
+            <form id="loginForm">
+                <fieldset class="grupo">
+                    <div class="campo hidden">
+                        <label for="name"> <strong>Nome</strong> </label>
+                        <input type="text" name="nome" id="name" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="email"> <strong>Email</strong> </label>
+                        <input type="email" name="email" id="email" required />
+                    </div>
+
+                    <div class="campo">
+                        <label for="password"> <strong>Senha</strong> </label>
+                        <input type="password" name="password" id="password" required/>
+                    </div>
+
+                    <div class="menu">
+                        <button type="submit" id="enter">Entrar</button>
+                        <button type="button" id="cancel">Cancelar</button>
+                    </div>
+
+                    <div class="forgot-password-container"><a class="forgot-password" href="/forgot-password.html">Esqueci a senha</a></div>
+
+                    <div class="auth-login">
+                        <a href="/auth/google" class="btn-google">Entrar com Google</a>
+                        <a href="/auth/Facebook" class="btn-facebook">Entrar com Facebook</a>
+                        <a href="/auth/github" class="btn-github">Entrar com GitHub</a>
+                    </div>
+
+                    <button type="button" id="create-account"><p>Não tem uma conta? Clique aqui para criar uma conta</p></button>                
+                </fieldset>
+            </form>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>

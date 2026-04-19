@@ -1,0 +1,190 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.main {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Header do Perfil */
+.profile-header {
+    margin-bottom: 25px;
+}
+
+.profile-photo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+}
+
+.profile-photo-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffbf00;
+}
+
+.edit-photo-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #ffbf00;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-header h2 {
+    color: #121212;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.profile-header p {
+    color: #757575;
+    font-size: 0.9rem;
+}
+
+/* Campos e Inputs */
+fieldset.grupo {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.input-with-button {
+    display: flex;
+    gap: 8px;
+}
+
+.campo input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.campo input[readonly] {
+    background-color: #f8f8f8;
+    color: #757575;
+    cursor: not-allowed;
+}
+
+/* Botões */
+.action-btn {
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    padding: 0 15px;
+    font-size: 0.85rem;
+}
+
+.menu {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
+}
+
+#save {
+    flex: 2;
+    background-color: #ffbf00;
+    color: white;
+    padding: 12px;
+}
+
+#exit {
+    flex: 1;
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    padding: 12px;
+}
+
+#num-acessos {
+    width: 35%;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#save {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 160px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.hidden {
+    display: none;
+}

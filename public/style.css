@@ -1,0 +1,243 @@
+/* Configurações Gerais e Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #121212; /* Fundo suave estilo rede social */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Container Principal */
+.main {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Fieldset e Grupo */
+fieldset.grupo {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilização dos Campos de Input */
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo label {
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.campo input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition:
+        border-color 0.3s,
+        box-shadow 0.3s;
+}
+
+.campo input:focus {
+    outline: none;
+    border-color: #ffbf00;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+/* Menu de Botões Principais */
+.menu {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#enter {
+    flex: 2;
+    background-color: #ffbf00;
+    color: white;
+    padding: 12px;
+}
+
+#cancel {
+    flex: 1;
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    padding: 12px;
+}
+
+/* Esqueci a Senha */
+.forgot-password-container {
+    text-align: right;
+}
+
+.forgot-password {
+    font-size: 0.85rem;
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Divisor Visual para Login Social */
+.auth-login {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Botões Sociais (Links estilizados como botões) */
+.auth-login a {
+    text-decoration: none;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-google {
+    background-color: #ffffff;
+    color: #757575;
+    border: 1px solid #ddd;
+}
+
+.btn-google:hover {
+    background-color: #f8f8f8;
+}
+
+.btn-facebook {
+    background-color: #1877f2;
+    color: white;
+}
+
+.btn-facebook:hover {
+    background-color: #166fe5;
+}
+
+.btn-github {
+    background-color: #24292e;
+    color: white;
+}
+
+.btn-github:hover {
+    background-color: #2f363d;
+}
+
+/* Criar Conta */
+#create-account {
+    background: none;
+    color: #4a90e2;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+#create-account p {
+    margin: 0;
+}
+
+#create-account:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- Estilos para a Tela de Recuperar Senha --- */
+
+/* Ajuste do Header da página */
+.main header h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.main header p {
+    line-height: 1.5;
+    padding: 0 10px;
+}
+
+fieldset.grupo {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+#enter {
+    flex: 2;
+    background-color: #ffbf00;
+    color: white;
+    padding: 12px;
+    font-size: 0.95rem;
+}
+
+#cancel {
+    flex: 1;
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    padding: 12px;
+    font-size: 0.95rem;
+}
+
+.campo input:focus {
+    border-color: #ffbf00;
+    box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.2);
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#forgot-password-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#forgot-password-title {
+    color: #121212;
+    font-size: 1.5rem;
+}
+
+#forgot-password-desc {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
