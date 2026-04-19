@@ -1,30 +1,34 @@
 import pool from '../../database/index.js';
 
 class User {
-    async create(email, passwordHash, salt) {
+    async create(name, email, passwordHash, salt) {
         const query = `
-            INSERT INTO users (email, password_hash, salt)
-            VALUES ($1, $2, $3)
-            RETURNING id, email;
+            INSERT INTO users (username, email, password_hash, salt)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, username, email;
         `;
-        const values = [email, passwordHash, salt];
+        const values = [name, email, passwordHash, salt];
 
         const { rows } = await pool.query(query, values);
 
         return rows[0];
     }
 
-    async update(email, passwordHash, salt) {
-        const query = `
-            UPDATE users SET email = $1, password_hash = $2, salt = $3
-            WHERE TRIM(email) = $1
-            RETURNING id, email;
-        `;
-        const values = [email, passwordHash, salt];
+    async update(id, username, image) {
+        try {
+            const query = `
+                UPDATE users SET username = COALESCE($2, username), image = COALESCE($3, image)
+                WHERE id = $1
+                RETURNING id, username, image;
+            `;
+            const values = [id, username, image];
 
-        const { rows } = await pool.query(query, values);
+            const { rows } = await pool.query(query, values);
 
-        return rows[0];
+            return rows[0];
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     async delete(email) {
@@ -37,10 +41,20 @@ class User {
 
     async findUser(email) {
         const query = `
-            SELECT id, email, password_hash, salt FROM users WHERE TRIM(email) = $1;
+            SELECT id, username, email, password_hash, salt FROM users WHERE TRIM(email) = $1;
         `;
 
         const { rows } = await pool.query(query, [email]);
+
+        return rows[0];
+    }
+
+    async findUserById(id) {
+        const query = `
+            SELECT id, username, email, image, access_count FROM users WHERE id = $1;
+        `;
+
+        const { rows } = await pool.query(query, [id]);
 
         return rows[0];
     }
@@ -77,6 +91,14 @@ class User {
         const { rows } = await pool.query(query, values);
 
         return rows[0];
+    }
+
+    async accessSucceed(id) {
+        const query = `
+            UPDATE users SET access_count = access_count + 1 WHERE id = $1; 
+        `;
+
+        await pool.query(query, [id]);
     }
 }
 

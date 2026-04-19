@@ -16,9 +16,16 @@ class AuthController {
 
         req.on('end', async () => {
             const payload = JSON.parse(body);
-            const { email, password } = payload;
+            const { name, email, password } = payload;
 
             try {
+                if (!name) {
+                    res.writeHead(400);
+                    return res.end(
+                        JSON.stringify({ error: 'Informe um nome de usuário' })
+                    );
+                }
+
                 if (!email || !validaEmail(email)) {
                     res.writeHead(400);
                     return res.end(
@@ -46,14 +53,14 @@ class AuthController {
                 res.writeHead(400);
                 return res.end(
                     JSON.stringify({
-                        error: 'Este email já está em uso.', // Feature: Deseja fazer login?
+                        error: 'Este email já está em uso.',
                     })
                 );
             }
 
             const { salt, hash } = await geraSenhaHash(password);
 
-            const user = await User.create(email, hash, salt);
+            const user = await User.create(name, email, hash, salt);
 
             if (user) {
                 const exp = 3600 * 2;
@@ -65,11 +72,17 @@ class AuthController {
                     exp: expiraEm,
                 });
 
+                User.accessSucceed(user.id);
+
                 res.writeHead(201, { 'Content-Type': 'application/json' });
                 res.end(
                     JSON.stringify({
                         message: 'Usuário criado com sucesso!',
-                        user: { id: user.id, email: user.email },
+                        user: {
+                            id: user.id,
+                            name: user.username,
+                            email: user.email,
+                        },
                         access_token: token,
                     })
                 );
@@ -102,7 +115,7 @@ class AuthController {
                 if (!password || !validaSenha(password)) {
                     res.writeHead(400);
                     return res.end(
-                        JSON.stringify({ error: 'Informe uma senha forte' })
+                        JSON.stringify({ error: 'Email ou senha incorreta.' })
                     );
                 }
             } catch (error) {
@@ -124,25 +137,31 @@ class AuthController {
                         exp: expiraEm,
                     });
 
+                    User.accessSucceed(user.id);
+
                     res.writeHead(201, { 'Content-Type': 'application/json' });
                     res.end(
                         JSON.stringify({
-                            message: `Login realizado com sucesso. Bem vindo(a) ${user.email}`,
-                            user: { id: user.id, email: user.email },
+                            message: `Login realizado com sucesso. Bem vindo(a) ${user.username}`,
+                            user: {
+                                id: user.id,
+                                name: user.username,
+                                email: user.email,
+                            },
                             access_token: token,
                         })
                     );
                 } else {
                     res.writeHead(400);
                     return res.end(
-                        JSON.stringify({ error: 'Senha incorreta.' })
+                        JSON.stringify({ error: 'Email ou senha incorreta.' })
                     );
                 }
             } else {
                 res.writeHead(400);
                 res.end(
                     JSON.stringify({
-                        error: `Nenhuma conta encontrada com este email: ${email}`, // Feature para encaminhar para tela de login
+                        error: 'Email ou senha incorreta',
                     })
                 );
             }
@@ -264,11 +283,6 @@ class AuthController {
                 );
             }
         });
-    }
-
-    async painelUsuario(req, res) {
-        res.writeHead(200);
-        return res.end(console.log('TELA DE PAINEL DE USUÁRIO'));
     }
 }
 

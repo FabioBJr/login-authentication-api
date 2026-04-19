@@ -5,6 +5,7 @@ async function configuraBancoDados() {
         CREATE table IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
             email VARCHAR(255) UNIQUE NOT NULL,
+            username VARCHAR(255) NOT NULL,
             password_hash TEXT NOT NULL,
             salt TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -14,7 +15,10 @@ async function configuraBancoDados() {
     const adicionaColunas = `
         ALTER TABLE users
         ADD COLUMN IF NOT EXISTS password_reset_token TEXT,
-        ADD COLUMN IF NOT EXISTS password_reset_expires TIMESTAMP;
+        ADD COLUMN IF NOT EXISTS password_reset_expires TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS username VARCHAR(255) NOT NULL,
+        ADD COLUMN IF NOT EXISTS image TEXT,
+        ADD COLUMN IF NOT EXISTS access_count INT DEFAULT 0;
     `;
 
     const queries = [criaTabelaUsuarios, adicionaColunas];

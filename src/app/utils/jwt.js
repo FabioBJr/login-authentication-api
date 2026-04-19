@@ -38,8 +38,6 @@ export function validaToken(token) {
         Buffer.from(encodedPayload, 'base64url').toString()
     );
 
-    console.log(JSON.stringify(payload));
-
     if (payload.exp) {
         const timestampAtual = Math.floor(Date.now() / 1000);
 
