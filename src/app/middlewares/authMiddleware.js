@@ -1,4 +1,4 @@
-import { validaToken } from '../utils/jwt.js';
+import { validateToken } from '../utils/jwt.js';
 
 export function authMiddleware(handler) {
     return async (req, res) => {
@@ -21,7 +21,7 @@ export function authMiddleware(handler) {
                 );
             }
 
-            const decoded = validaToken(token);
+            const decoded = validateToken(token);
 
             if (!decoded) {
                 res.writeHead(401);

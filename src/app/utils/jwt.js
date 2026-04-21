@@ -1,6 +1,5 @@
-import jwtConfig from '../../config/jwt.js';
-
 import crypto from 'node:crypto';
+import jwtConfig from '../../config/jwt.js';
 
 const JWT_SECRET = jwtConfig.jwt;
 
@@ -8,7 +7,7 @@ function base64UrlEncode(obj) {
     return Buffer.from(JSON.stringify(obj)).toString('base64url');
 }
 
-export function geraToken(payload) {
+export function generateToken(payload) {
     const header = { alg: 'HS256', typ: 'JWT' };
 
     const encodedHeader = base64UrlEncode(header);
@@ -22,7 +21,7 @@ export function geraToken(payload) {
     return `${encodedHeader}.${encodedPayload}.${assinatura}`;
 }
 
-export function validaToken(token) {
+export function validateToken(token) {
     const [encodedHeader, encodedPayload, assinatura] = token.split('.');
 
     const novaAssinatura = crypto

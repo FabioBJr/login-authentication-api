@@ -59,7 +59,7 @@ class User {
         return rows[0];
     }
 
-    async salvaResetToken(id, token, dataExpiracao) {
+    async saveResetToken(id, token, dataExpiracao) {
         const query = `
             UPDATE users
             SET password_reset_token = $1,

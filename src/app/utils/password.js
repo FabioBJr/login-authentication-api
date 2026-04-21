@@ -3,7 +3,7 @@ import { promisify } from 'node:util';
 
 const scryptAsync = promisify(crypto.scrypt);
 
-export async function geraSenhaHash(password) {
+export async function generateHash(password) {
     const salt = crypto.randomBytes(16).toString('hex');
 
     const hashKey = await scryptAsync(password, salt, 16);
@@ -14,7 +14,7 @@ export async function geraSenhaHash(password) {
     };
 }
 
-export async function verificaSenha(password, storedHash, storedSalt) {
+export async function verifyPassword(password, storedHash, storedSalt) {
     const hashKey = await scryptAsync(password, storedSalt, 16);
 
     const storedHashBuffer = Buffer.from(storedHash, 'hex');

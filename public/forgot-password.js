@@ -6,7 +6,7 @@ forgotForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const email = document.getElementById('email').value;
 
-    btnSubmit.disable = true;
+    btnSubmit.disabled = true;
 
     try {
         const response = await fetch('/forgot-password', {
@@ -31,6 +31,6 @@ forgotForm.addEventListener('submit', async (event) => {
             error
         );
     } finally {
-        btnSubmit.disable = false;
+        btnSubmit.disabled = false;
     }
 });

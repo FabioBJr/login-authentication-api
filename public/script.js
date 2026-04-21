@@ -35,7 +35,7 @@ btnToggle.addEventListener('click', () => {
 loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    btnEnter.disable = true;
+    btnEnter.disabled = true;
     btnEnter.textContent = 'Aguarde...';
 
     const name = document.getElementById('name').value;
@@ -77,7 +77,7 @@ loginForm.addEventListener('submit', async (event) => {
         console.error('Erro na comunicação com o servidor:', error);
         alert('Servidor offline!');
     } finally {
-        btnEnter.disable = false;
+        btnEnter.disabled = false;
         btnEnter.textContent = 'Entrar';
     }
 });

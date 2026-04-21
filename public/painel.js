@@ -53,7 +53,7 @@ async function carregaDadosUsuario() {
 }
 
 async function atualizaPerfil() {
-    btnSaveText.disable = true;
+    btnSaveText.disabled = true;
     btnSaveText.textContent = 'Aguarde...';
     const loading = document.getElementById('spinner');
 
@@ -91,7 +91,7 @@ async function atualizaPerfil() {
     } catch (err) {
         console.log(err);
     } finally {
-        btnSaveText.disable = false;
+        btnSaveText.disabled = false;
         btnSaveText.textContent = 'Salvar Alterações';
         loading.classList.add('hidden');
     }

@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import { parseJSONBody } from '../utils/requestHelper.js';
 
 class UserController {
     async getProfile(req, res) {
@@ -31,33 +32,25 @@ class UserController {
     }
 
     async updateProfile(req, res) {
-        let body = '';
         const userId = req.user.id;
+        const { name, photo } = await parseJSONBody(req);
 
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        });
+        try {
+            const result = await User.update(userId, name, photo);
 
-        req.on('end', async () => {
-            try {
-                const { name, photo } = JSON.parse(body);
-
-                const result = await User.update(userId, name, photo);
-
-                return res.end(
-                    JSON.stringify({
-                        id: result.id,
-                        name: result.username,
-                        photo: result.image,
-                    })
-                );
-            } catch (err) {
-                res.writeHead(500, { 'Content-Type': 'applicant/json' });
-                return res.end(
-                    JSON.stringify({ error: 'Erro ao atualizar perfil' })
-                );
-            }
-        });
+            return res.end(
+                JSON.stringify({
+                    id: result.id,
+                    name: result.username,
+                    photo: result.image,
+                })
+            );
+        } catch (err) {
+            res.writeHead(500, { 'Content-Type': 'applicant/json' });
+            return res.end(
+                JSON.stringify({ error: 'Erro ao atualizar perfil' })
+            );
+        }
     }
 }
 
