@@ -8,6 +8,8 @@ const apiRoutes = {
     'POST:/forgot-password': AuthController.recoverPassword,
     'GET:/auth/me': authMiddleware(UserController.getProfile),
     'PUT:/users/update-profile': authMiddleware(UserController.updateProfile),
+    'GET:/auth/github': AuthController.githubRedirect,
+    'GET:/auth/github/callback': AuthController.githubCallback,
 };
 
 export async function handleApiRoutes(req, res) {
@@ -20,6 +22,11 @@ export async function handleApiRoutes(req, res) {
     if (routeKey === 'POST:/reset-password') {
         req.params = { token: req.url.split('?token=')[1] };
         return AuthController.resetPassword(req, res);
+    }
+
+    if (routeKey === 'POST:/auth/github/complete-signup') {
+        req.params = { token: req.url.split('?token=')[1] };
+        return AuthController.githubCreateUser(req, res);
     }
 
     if (handler) {

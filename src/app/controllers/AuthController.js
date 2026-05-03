@@ -2,9 +2,11 @@ import crypto from 'node:crypto';
 import Mail from '../lib/Mail.js';
 import User from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
+import githubConfig from '../../config/github.js';
 import { parseJSONBody } from '../utils/requestHelper.js';
 import { checkEmail, checkPassword } from '../utils/validators.js';
-import { generateHash, verifyPassword } from '../utils/password.js';
+import { generateHash, verifyPassword, expirationTime } from '../utils/password.js';
+import { stringify } from 'node:querystring';
 
 class AuthController {
     async createUser(req, res) {
@@ -13,23 +15,17 @@ class AuthController {
         try {
             if (!name) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Informe um nome de usuário' })
-                );
+                return res.end(JSON.stringify({ error: 'Informe um nome de usuário' }));
             }
 
             if (!email || !checkEmail(email)) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Informe um email válido' })
-                );
+                return res.end(JSON.stringify({ error: 'Informe um email válido' }));
             }
 
             if (!password || !checkPassword(password)) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Informe uma senha forte.' })
-                );
+                return res.end(JSON.stringify({ error: 'Informe uma senha forte.' }));
             }
         } catch (error) {
             res.writeHead(400);
@@ -55,19 +51,18 @@ class AuthController {
         const user = await User.create(name, email, hash, salt);
 
         if (user) {
-            const exp = 3600 * 2;
-            const expiraEm = Math.floor(Date.now() / 1000) + exp;
+            const expiresIn = expirationTime();
 
             const token = generateToken({
                 id: user.id,
                 email: user.email,
-                exp: expiraEm,
+                exp: expiresIn,
             });
 
             User.accessSucceed(user.id);
 
             res.writeHead(201, { 'Content-Type': 'application/json' });
-            res.end(
+            return res.end(
                 JSON.stringify({
                     message: 'Usuário criado com sucesso!',
                     user: {
@@ -80,9 +75,7 @@ class AuthController {
             );
         } else {
             res.writeHead(400);
-            res.end(
-                JSON.stringify({ error: 'Não foi possível criar usuário.' })
-            );
+            res.end(JSON.stringify({ error: 'Não foi possível criar usuário.' }));
         }
     }
 
@@ -92,16 +85,12 @@ class AuthController {
         try {
             if (!email || !checkEmail(email)) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Informe um email válido' })
-                );
+                return res.end(JSON.stringify({ error: 'Informe um email válido' }));
             }
 
             if (!password || !checkPassword(password)) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Email ou senha incorreta.' })
-                );
+                return res.end(JSON.stringify({ error: 'Email ou senha incorreta.' }));
             }
         } catch (error) {
             res.writeHead(400);
@@ -136,9 +125,7 @@ class AuthController {
                 );
             } else {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Email ou senha incorreta.' })
-                );
+                return res.end(JSON.stringify({ error: 'Email ou senha incorreta.' }));
             }
         } else {
             res.writeHead(400);
@@ -159,8 +146,7 @@ class AuthController {
             res.writeHead(200);
             return res.end(
                 JSON.stringify({
-                    message:
-                        'Se este e-mail estiver cadastrado, você receberá um link.',
+                    message: 'Se este e-mail estiver cadastrado, você receberá um link.',
                 })
             );
         }
@@ -203,8 +189,7 @@ class AuthController {
         res.writeHead(200);
         res.end(
             JSON.stringify({
-                message:
-                    'Se este e-mail estiver cadastrado, você receberá um link.',
+                message: 'Se este e-mail estiver cadastrado, você receberá um link.',
             })
         );
     }
@@ -216,9 +201,7 @@ class AuthController {
         try {
             if (!password || !checkPassword(password)) {
                 res.writeHead(400);
-                return res.end(
-                    JSON.stringify({ error: 'Informe uma senha forte' })
-                );
+                return res.end(JSON.stringify({ error: 'Informe uma senha forte' }));
             }
         } catch (error) {
             res.writeHead(400);
@@ -248,6 +231,179 @@ class AuthController {
                     erro: `Ocorreu um erro ao redefiner sua senha. Tente novamente.`,
                 })
             );
+        }
+    }
+
+    githubRedirect(req, res) {
+        try {
+            const client_id = githubConfig.clientId;
+            const redirectUri = 'http://localhost:3000/auth/github/callback';
+            const githubUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${redirectUri}&scope=user:email`;
+
+            res.writeHead(302, { Location: githubUrl });
+            res.end();
+        } catch (err) {
+            console.error('Erro no endpoint de redirecionamento', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Erro no redirecionamento' }));
+        }
+    }
+
+    async githubCallback(req, res) {
+        try {
+            const url = req.url.split('code=');
+            const client_id = githubConfig.clientId;
+            const client_secret = githubConfig.clientSecret;
+
+            if (url.length < 2) {
+                console.log('Autorização cancelada ou código ausente.');
+                res.writeHead(302, {
+                    Location: '/index.html',
+                });
+                return res.end();
+            }
+
+            const code = url[1];
+
+            const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({ client_id, client_secret, code }),
+            });
+
+            if (!tokenResponse.ok) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ error: 'Erro ao obter token.' }));
+            }
+
+            const tokenData = await tokenResponse.json();
+
+            if (tokenData.error || !tokenData.access_token) {
+                console.error('Erro na troca do código:', tokenData.error_description);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ error: 'Código de autorização inválido.' }));
+            }
+
+            const { access_token } = tokenData;
+
+            const userResponse = await fetch('https://api.github.com/user', {
+                headers: { Authorization: `Bearer ${access_token}` },
+            });
+
+            if (!userResponse.ok) {
+                const error = await userResponse.text();
+                console.error('Erro ao conectar com Github:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ error: 'Falha ao buscar perfil.' }));
+            }
+
+            const githubUser = await userResponse.json();
+
+            if (!githubUser) {
+                console.log('Erro ao encontrar o usuário github.');
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(
+                    JSON.stringify({
+                        error: 'Falha ao capturar dados do usuário',
+                    })
+                );
+            }
+
+            let userEmail = githubUser.email;
+
+            if (!userEmail) {
+                const emailResponse = await fetch('https://api.github.com/user/emails', {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                });
+
+                if (!emailResponse.ok) {
+                    res.writeHead(500, {
+                        'Content-Type': 'application/json',
+                    });
+                    return res.end(
+                        JSON.stringify({
+                            error: 'Erro ao buscar emails privados.',
+                        })
+                    );
+                }
+
+                const emails = await emailResponse.json();
+                const primaryEmail = emails.find((o) => o.primary && o.verified);
+
+                userEmail = primaryEmail ? primaryEmail.email : emails[0].email;
+            }
+
+            let user = await User.findUser(userEmail);
+
+            if (!user) {
+                const payload = {
+                    name: githubUser.login,
+                    email: userEmail,
+                    photo: githubUser.avatar_url,
+                };
+
+                const tempToken = generateToken(payload);
+
+                res.writeHead(302, {
+                    Location: `/create-password.html?token=${tempToken}`,
+                });
+                return res.end();
+            }
+
+            const token = generateToken({ id: user.id, email: user.email });
+            User.accessSucceed(user.id);
+
+            res.writeHead(302, { Location: `/painel.html?token=${token}` });
+            return res.end();
+        } catch (error) {
+            console.error('Erro no fluxo de autenticação:', error);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Erro interno no servidor.' }));
+        }
+    }
+
+    async githubCreateUser(req, res) {
+        try {
+            const { password } = await parseJSONBody(req);
+            const token = req.params.token;
+            const encodedPayload = token.split('.')[1];
+
+            const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString());
+
+            const { salt, hash } = await generateHash(password);
+
+            const user = await User.create(payload.name, payload.email, hash, salt, payload.photo);
+
+            if (user) {
+                const expiresIn = expirationTime();
+
+                const token = generateToken({
+                    id: user.id,
+                    email: user.email,
+                    exp: expiresIn,
+                });
+
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                return res.end(
+                    JSON.stringify({
+                        user: {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            photo: user.photo,
+                        },
+                        access_token: token,
+                    })
+                );
+            }
+        } catch (err) {
+            res.writeHead(400, { Content_type: 'application/json' });
+            return res.end(JSON.stringify({ error: 'Erro ao criar novo usuário' }));
         }
     }
 }

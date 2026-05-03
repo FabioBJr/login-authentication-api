@@ -105,7 +105,21 @@ function logout() {
     window.location.replace('/index.html');
 }
 
-document.addEventListener('DOMContentLoaded', carregaDadosUsuario);
+function capturaToken() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+        localStorage.setItem('token', token);
+        window.history.replaceState({}, document.title, '/painel.html');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    capturaToken();
+    carregaDadosUsuario();
+});
+
 btnEditPhoto.addEventListener('click', editaFoto);
 btnSaveText.addEventListener('click', atualizaPerfil);
 btnExit.addEventListener('click', logout);

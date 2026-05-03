@@ -22,3 +22,10 @@ export async function verifyPassword(password, storedHash, storedSalt) {
     // Evitar ataques por tentativa bruta calculando o tempo
     return crypto.timingSafeEqual(hashKey, storedHashBuffer);
 }
+
+export function expirationTime() {
+    const exp = 3600 * 2;
+    const expiresIn = Math.floor(Date.now() / 1000) + exp;
+
+    return expiresIn;
+}
