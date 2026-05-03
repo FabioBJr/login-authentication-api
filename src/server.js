@@ -23,14 +23,16 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'GET') {
         try {
-            const relativePath = req.url.startsWith('/')
-                ? req.url.slice(1)
-                : req.url;
+            const cleanUrl = req.url.split('?')[0];
+            const relativePath = cleanUrl.startsWith('/')
+                ? cleanUrl.slice(1)
+                : cleanUrl;
             const fullPath = path.resolve(
                 process.cwd(),
                 'public',
                 relativePath
             );
+
             const content = await fs.readFile(fullPath);
 
             const ext = path.extname(fullPath);

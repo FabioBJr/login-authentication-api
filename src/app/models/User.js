@@ -1,13 +1,17 @@
 import pool from '../../database/index.js';
 
 class User {
-    async create(name, email, passwordHash, salt) {
+    async create(name, email, passwordHash, salt, image) {
+        if (!image) {
+            image = '';
+        }
+
         const query = `
-            INSERT INTO users (username, email, password_hash, salt)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO users (username, email, password_hash, salt, image)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING id, username, email;
         `;
-        const values = [name, email, passwordHash, salt];
+        const values = [name, email, passwordHash, salt, image];
 
         const { rows } = await pool.query(query, values);
 
