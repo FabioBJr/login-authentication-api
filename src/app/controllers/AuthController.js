@@ -1,12 +1,13 @@
 import crypto from 'node:crypto';
 import Mail from '../lib/Mail.js';
+import { google } from 'googleapis';
 import User from '../models/User.js';
+import { stringify } from 'node:querystring';
 import { generateToken } from '../utils/jwt.js';
-import githubConfig from '../../config/github.js';
+import authConfig from '../../config/authenticators.js';
 import { parseJSONBody } from '../utils/requestHelper.js';
 import { checkEmail, checkPassword } from '../utils/validators.js';
 import { generateHash, verifyPassword, expirationTime } from '../utils/password.js';
-import { stringify } from 'node:querystring';
 
 class AuthController {
     async createUser(req, res) {
@@ -236,7 +237,7 @@ class AuthController {
 
     githubRedirect(req, res) {
         try {
-            const client_id = githubConfig.clientId;
+            const client_id = authConfig.github.clientId;
             const redirectUri = 'http://localhost:3000/auth/github/callback';
             const githubUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${redirectUri}&scope=user:email`;
 
@@ -252,8 +253,8 @@ class AuthController {
     async githubCallback(req, res) {
         try {
             const url = req.url.split('code=');
-            const client_id = githubConfig.clientId;
-            const client_secret = githubConfig.clientSecret;
+            const client_id = authConfig.github.clientId;
+            const client_secret = authConfig.github.clientSecret;
 
             if (url.length < 2) {
                 console.log('Autorização cancelada ou código ausente.');
@@ -349,9 +350,7 @@ class AuthController {
 
                 const tempToken = generateToken(payload);
 
-                res.writeHead(302, {
-                    Location: `/create-password.html?token=${tempToken}`,
-                });
+                res.writeHead(302, { Location: `/create-password.html?token=${tempToken}` });
                 return res.end();
             }
 
@@ -367,7 +366,7 @@ class AuthController {
         }
     }
 
-    async githubCreateUser(req, res) {
+    async createAuthenticatedUser(req, res) {
         try {
             const { password } = await parseJSONBody(req);
             const token = req.params.token;
@@ -387,7 +386,7 @@ class AuthController {
                     email: user.email,
                     exp: expiresIn,
                 });
-
+                User.accessSucceed(user.id);
                 res.writeHead(201, { 'Content-Type': 'application/json' });
                 return res.end(
                     JSON.stringify({
@@ -404,6 +403,86 @@ class AuthController {
         } catch (err) {
             res.writeHead(400, { Content_type: 'application/json' });
             return res.end(JSON.stringify({ error: 'Erro ao criar novo usuário' }));
+        }
+    }
+
+    googleRedirect(req, res) {
+        try {
+            const client_id = authConfig.google.clientId;
+            const clientSecret = authConfig.google.clientSecret;
+            const redirectUri = 'http://localhost:3000/auth/google/callback';
+
+            const oauth2Client = new google.auth.OAuth2(client_id, clientSecret, redirectUri);
+
+            const scopes = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'];
+
+            const googleUrl = oauth2Client.generateAuthUrl({
+                access_type: 'offline',
+                scope: scopes,
+                include_granted_scopes: true,
+            });
+
+            res.writeHead(302, { Location: googleUrl });
+            res.end();
+        } catch (err) {
+            console.error('Erro no endpoint de redirecionamento', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Erro no redirecionamento' }));
+        }
+    }
+
+    async googleCallback(req, res) {
+        try {
+            const client_id = authConfig.google.clientId;
+            const clientSecret = authConfig.google.clientSecret;
+            const redirectUri = 'http://localhost:3000/auth/google/callback';
+
+            const oauth2Client = new google.auth.OAuth2(client_id, clientSecret, redirectUri);
+            const baseURL = 'http://localhost:3000';
+            const parsedUrl = new URL(req.url, baseURL);
+
+            const code = parsedUrl.searchParams.get('code');
+
+            if (!code) {
+                console.log('Autorização cancelada ou código ausente.');
+                res.writeHead(302, { Location: '/index.html' });
+                return res.end();
+            }
+
+            const { tokens } = await oauth2Client.getToken(code);
+
+            oauth2Client.setCredentials(tokens);
+
+            const oauth2 = google.oauth2({
+                auth: oauth2Client,
+                version: 'v2',
+            });
+
+            const userInfo = await oauth2.userinfo.get();
+            const googleUser = userInfo.data;
+
+            let user = await User.findUser(googleUser.email);
+
+            if (!user) {
+                const tempToken = generateToken({
+                    name: googleUser.name,
+                    email: googleUser.email,
+                    photo: googleUser.picture,
+                });
+
+                res.writeHead(302, { Location: `/create-password.html?token=${tempToken}` });
+                return res.end();
+            }
+
+            const token = generateToken({ id: user.id, email: user.email });
+            User.accessSucceed(user.id);
+
+            res.writeHead(302, { Location: `/painel.html?token=${token}` });
+            return res.end();
+        } catch (err) {
+            console.error('Erro no fluxo de callback Google', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Erro interno no servidor.' }));
         }
     }
 }
