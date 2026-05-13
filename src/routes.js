@@ -10,6 +10,8 @@ const apiRoutes = {
     'PUT:/users/update-profile': authMiddleware(UserController.updateProfile),
     'GET:/auth/github': AuthController.githubRedirect,
     'GET:/auth/github/callback': AuthController.githubCallback,
+    'GET:/auth/google': AuthController.googleRedirect,
+    'GET:/auth/google/callback': AuthController.googleCallback,
 };
 
 export async function handleApiRoutes(req, res) {
@@ -24,9 +26,9 @@ export async function handleApiRoutes(req, res) {
         return AuthController.resetPassword(req, res);
     }
 
-    if (routeKey === 'POST:/auth/github/complete-signup') {
+    if (routeKey === 'POST:/auth/complete-signup') {
         req.params = { token: req.url.split('?token=')[1] };
-        return AuthController.githubCreateUser(req, res);
+        return AuthController.createAuthenticatedUser(req, res);
     }
 
     if (handler) {

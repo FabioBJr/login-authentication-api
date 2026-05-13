@@ -27,22 +27,22 @@ resetForm.addEventListener('submit', async (event) => {
     btnSubmit.disabled = true;
 
     try {
-        const response = await fetch(
-            `/auth/github/complete-signup?token=${token}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password }),
-            }
-        );
+        const response = await fetch(`/auth/complete-signup?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
 
         if (response.ok) {
+            const payload = await response.json();
             alert('Senha criada com sucesso.');
-            if (response.access_token) {
-                localStorage.setItem('token', response.access_token);
+            if (payload.access_token) {
+                localStorage.setItem('token', payload.access_token);
                 window.location.href = '/painel.html';
+            } else {
+                console.log('No acess token');
             }
         } else {
             const res = await response.json();
