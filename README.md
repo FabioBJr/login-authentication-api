@@ -1,5 +1,5 @@
 # Web Login
-![alt text](image.png)
+![alt text](loginPage.png)
 
 - Projeto simples para aprender e praticar alguns conceitos do desenvolvimento web (rotas, server, autenticação...) com Nodejs. <br>
 Quis explorar os fundamentos e entender como as coisas funcionavam, então me limitei às ferramentas<br> 
