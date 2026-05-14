@@ -80,4 +80,4 @@ Acesse localmente pelo navegador `http://localhost:3000`.
 
 ## Aplicação
 
-![Algumas trechos do fluxo da aplicacao](imgs/app.png)
+![Algums trechos do fluxo da aplicacao](imgs/app.png)
