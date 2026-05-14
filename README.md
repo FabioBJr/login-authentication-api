@@ -1,5 +1,5 @@
 # Web Login
-![alt text](image.png)
+![Pagina inicial de login](imgs/loginPage.png)
 
 - Projeto simples para aprender e praticar alguns conceitos do desenvolvimento web (rotas, server, autenticação...) com Nodejs. <br>
 Quis explorar os fundamentos e entender como as coisas funcionavam, então me limitei às ferramentas<br> 
@@ -77,3 +77,7 @@ FACEBOOK_CLIENT_SECRET=
 
 ### Uso
 Acesse localmente pelo navegador `http://localhost:3000`.
+
+## Aplicação
+
+![Algumas trechos do fluxo da aplicacao](imgs/app.png)
