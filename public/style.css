@@ -142,15 +142,6 @@ button:active {
     background-color: #f8f8f8;
 }
 
-.btn-facebook {
-    background-color: #1877f2;
-    color: white;
-}
-
-.btn-facebook:hover {
-    background-color: #166fe5;
-}
-
 .btn-github {
     background-color: #24292e;
     color: white;
