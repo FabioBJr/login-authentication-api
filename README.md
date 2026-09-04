@@ -1,31 +1,36 @@
 # Web Login
-![Pagina inicial de login](imgs/loginPage.png)
 
-- Projeto simples para aprender e praticar alguns conceitos do desenvolvimento web (rotas, server, autenticação...) com Nodejs. <br>
-Quis explorar os fundamentos e entender como as coisas funcionavam, então me limitei às ferramentas<br> 
-do próprio node e evitei utilizar frameworks e libs como o Express e o jsonwebtoken.
+<p align="right">
+  <strong>English</strong> |
+  <a href="README.pt-BR.md">Português (Brasil)</a>
+</p>
 
-- Utilizei um modelo de LLM como uma fonte de consulta para auxiliar no desenvolvimento e na criação do layout no front.
+![Homepage](imgs/loginPage.png)
 
-## Sobre
-A aplicação lida com as principais rotinas de autenticação de login, <br>
-executa as principais validações desse processo e faz a integração <br>
-através do protocolo oAuth2 para acesso por meio de outras plataformas
+I wanted to explore the fundamentals and understand how these things work, so I limited myself to use only<br>
+the node tools and avoid using frameworks and libraries like Express and JWT.
 
-### Funcionalidades
-- **Recuperação de conta** com disparo de email.
-- Expiração de token de autorização
-- **Cadastro/Login** com Github
-- **Cadastro/Login** com Google
-- **Sicronização de dados** com outras plataformas
-- Edição de informações de perfil e avatar
+- Used a LLM model as a resource to help at the development and at the front-end design.
 
-## Como rodar projeto
-### Pré-instalação
-Garanta que o Node.js `v20.6.0+` e o PostgreSQL `v14+` estão instalados.
+## About
+The application runs the main login authentication routines, <br>
+executes the main validations in this process and integrate with other <br>
+platforms by the oAuth2 protocol.
 
-### Configuração do `.env`
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+### Functionalities
+- **Password recover** with e-mail trigger
+- Authorization token expiration
+- **Sign In/Sign Up** with Github
+- **Sign In/Sign Up** with Google
+- **Data Synchronization** with other platforms
+- Profile edition
+
+## How to Run
+### Pre-installation
+Make sure that Node.js `v20.6.0+` and PostgreSQL `v14+` are installed.
+
+### Setting `.env`
+Create an `.env` file at the root of the project with the following variables:
 ```env
 #Auth
 JWT_SECRET=chave_para_gerar_token_jwt
@@ -52,28 +57,28 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-### Instalação
+### Installation
 
-1. Clone o repositório no teu computador:
+1. Clone the repository in your computer:
     ```bash
     git clone https://github.com/FabioBJr/login-authentication-api.git
     ```
-2. Já dentro do projeto instale os pacotes do projeto:
+2. Inside the project install the project's packages:
     ```bash
     npm install
     ```
-3. Crie a tabela de usuários:
+3. Create the user table:
     ```bash
     node src/setup.js
     ```
-4. Inicie a aplicação:
+4. Initialize the application:
     ```bash
     node src/server.js
     ```
 
-### Uso
-Acesse localmente pelo navegador `http://localhost:3000`.
+### Run
+Access it locally in your browser at `http://localhost:3000`.
 
-## Aplicação
+## Application
 
-![Algums trechos do fluxo da aplicacao](imgs/app.png)
+![Some takes of the application](imgs/app.png)
